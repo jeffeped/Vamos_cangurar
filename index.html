@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vamos Cangurar!</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7A4BA8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cangurar">
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5EFFB;--lilac-soft:#EADCF5;--purple:#7A4BA8;--purple-dark:#5C3486;
+  --lilac:#A98BC9;--pink:#D87AAE;--pink-soft:#F7E1EF;--warm:#E0974A;
+  --ink:#3A2A4D;--ink-soft:#71608A;--line:#E6D8F0;--white:#FFFEFE;
+  --shadow:0 10px 30px rgba(92,52,134,.13);--shadow-soft:0 4px 14px rgba(92,52,134,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:radial-gradient(1200px 700px at 12% -5%,#E7CFF2 0%,transparent 55%),
+             radial-gradient(1000px 700px at 112% 8%,#F3D4E6 0%,transparent 52%),#E4D6F0;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 12px;color:var(--ink);
+}
+.phone{
+  width:390px;max-width:100%;height:800px;max-height:92vh;background:var(--bg);border-radius:42px;
+  position:relative;overflow:hidden;
+  box-shadow:0 30px 70px rgba(60,40,90,.32),0 0 0 11px #271b33,0 0 0 13px #38284a;
+  display:flex;flex-direction:column;
+}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:140px;height:26px;background:#271b33;border-radius:0 0 18px 18px;z-index:50;}
+.topbar{padding:38px 22px 16px;flex-shrink:0;background:linear-gradient(180deg,var(--bg) 60%,rgba(245,239,251,0) 100%);position:relative;z-index:20;}
+.brand{display:flex;align-items:center;gap:11px;}
+.brand-logo{width:44px;height:44px;border-radius:14px;flex-shrink:0;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(92,52,134,.22);font-size:24px;border:1px solid var(--line);}
+.brand h1{font-family:'Fraunces',serif;font-size:21px;font-weight:600;letter-spacing:-.3px;line-height:1;}
+.brand p{font-size:11.5px;color:var(--ink-soft);margin-top:2px;font-weight:600;}
+
+.screen-wrap{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 18px 110px;scroll-behavior:smooth;}
+.screen-wrap::-webkit-scrollbar{width:0;}
+.screen{animation:fade .35s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.screen-title{font-family:'Fraunces',serif;font-size:25px;font-weight:600;letter-spacing:-.5px;margin:6px 0 4px;}
+.screen-sub{font-size:13px;color:var(--ink-soft);margin-bottom:18px;font-weight:600;}
+
+/* CHIPS */
+.caregiver-pick{margin-bottom:18px;}
+.caregiver-pick label{font-size:12.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:9px;}
+.chips{display:flex;gap:8px;}
+.chip{flex:1;padding:11px 6px;border-radius:14px;border:2px solid var(--line);background:var(--white);font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chip .ic{font-size:18px;}
+.chip.sel{border-color:var(--purple);background:var(--lilac-soft);color:var(--purple-dark);box-shadow:var(--shadow-soft);}
+.chip:active{transform:scale(.96);}
+.chip:disabled{opacity:.5;cursor:default;}
+
+/* TIMER */
+.timer-card{background:var(--white);border-radius:28px;padding:30px 24px 26px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--line);}
+.dial{position:relative;width:218px;height:218px;margin:4px auto 18px;}
+.dial svg{transform:rotate(-90deg);}
+.dial .bg{fill:none;stroke:var(--lilac-soft);stroke-width:14;}
+.dial .fg{fill:none;stroke:url(#grad);stroke-width:14;stroke-linecap:round;stroke-dasharray:609;stroke-dashoffset:609;transition:stroke-dashoffset 1s linear;}
+.dial-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.dial-time{font-family:'Fraunces',serif;font-size:42px;font-weight:600;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;}
+.dial-label{font-size:11.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;margin-top:7px;}
+.dial.run .dial-label{color:var(--pink);}
+.pulse-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--pink);margin-right:5px;vertical-align:middle;animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+.btn-main{width:100%;padding:17px;border:none;border-radius:18px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:.18s;letter-spacing:.2px;background:linear-gradient(150deg,var(--pink),var(--purple));color:#fff;box-shadow:0 8px 20px rgba(122,75,168,.35);}
+.btn-main:active{transform:scale(.97);}
+.btn-main.stop{background:linear-gradient(150deg,#9b86b3,#71608a);box-shadow:0 8px 20px rgba(113,96,138,.3);}
+.btn-skip{width:100%;margin-top:12px;padding:13px;border:1.5px solid var(--line);border-radius:15px;background:transparent;font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:.18s;}
+.btn-skip:active{transform:scale(.98);background:var(--lilac-soft);}
+.today-strip{display:flex;gap:10px;margin-top:16px;}
+.stat{flex:1;background:var(--white);border:1px solid var(--line);border-radius:18px;padding:14px 10px;text-align:center;box-shadow:var(--shadow-soft);}
+.stat .v{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--purple-dark);line-height:1;}
+.stat .l{font-size:10.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px;margin-top:6px;}
+
+/* HIST */
+.week-card{background:linear-gradient(150deg,var(--purple),var(--purple-dark));color:#fff;border-radius:24px;padding:20px 22px;margin-bottom:20px;box-shadow:0 10px 24px rgba(92,52,134,.34);}
+.week-card .top{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;opacity:.82;}
+.week-card .big{font-family:'Fraunces',serif;font-size:34px;font-weight:600;margin:4px 0 2px;letter-spacing:-1px;}
+.week-card .note{font-size:12.5px;font-weight:600;opacity:.92;}
+.week-bars{display:flex;align-items:flex-end;gap:7px;height:54px;margin-top:16px;}
+.week-bars .b{flex:1;background:rgba(255,255,255,.30);border-radius:6px 6px 3px 3px;min-height:5px;position:relative;transition:height .5s;}
+.week-bars .b span{position:absolute;bottom:-17px;left:0;right:0;text-align:center;font-size:9.5px;font-weight:700;opacity:.82;}
+.day-group{margin-bottom:18px;}
+.day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;padding:0 4px;}
+.day-head .d{font-weight:800;font-size:14px;}
+.day-head .t{font-size:13px;font-weight:800;color:var(--purple);}
+.session{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:13px;box-shadow:var(--shadow-soft);}
+.session .av{width:38px;height:38px;border-radius:12px;background:var(--lilac-soft);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.session .info{flex:1;min-width:0;}
+.session .who{font-weight:800;font-size:13.5px;}
+.session .when{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
+.session .dur{font-family:'Fraunces',serif;font-weight:600;font-size:17px;color:var(--ink);}
+.session.skip{background:transparent;border:1.5px dashed var(--line);box-shadow:none;}
+.session.skip .av{background:var(--bg);opacity:.8;}
+.session.skip .who{color:var(--ink-soft);font-weight:700;}
+.session.skip .when{font-style:italic;}
+.empty{text-align:center;padding:50px 20px;color:var(--ink-soft);}
+.empty .em{font-size:48px;display:block;margin-bottom:12px;opacity:.55;}
+.empty p{font-size:13.5px;font-weight:600;line-height:1.5;}
+
+/* EDU */
+.edu-card{background:var(--white);border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow-soft);cursor:pointer;transition:.18s;}
+.edu-card:active{transform:scale(.985);}
+.edu-banner{height:104px;display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;}
+.edu-banner .tag{position:absolute;top:11px;left:11px;background:rgba(255,255,255,.92);color:var(--purple-dark);font-size:10px;font-weight:800;padding:4px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
+.edu-body{padding:14px 16px 16px;}
+.edu-body h3{font-family:'Fraunces',serif;font-size:16.5px;font-weight:600;line-height:1.25;margin-bottom:5px;}
+.edu-body p{font-size:12.5px;color:var(--ink-soft);font-weight:600;line-height:1.5;}
+.edu-detail{display:none;padding:0 16px 16px;font-size:13px;line-height:1.6;color:var(--ink-soft);font-weight:600;}
+.edu-card.open .edu-detail{display:block;animation:fade .3s;}
+.edu-detail ul{list-style:none;margin:6px 0 0;}
+.edu-detail li{position:relative;padding-left:18px;margin-bottom:7px;}
+.edu-detail li::before{content:'';position:absolute;left:2px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--pink);}
+.edu-detail .warn{color:var(--purple-dark);font-weight:800;}
+/* EXPORTAR */
+.btn-export{width:100%;margin-top:8px;padding:14px;border:1.5px dashed var(--purple);border-radius:15px;background:transparent;font-family:inherit;font-size:13px;font-weight:800;color:var(--purple);cursor:pointer;transition:.18s;letter-spacing:.2px;}
+.btn-export:active{background:var(--lilac-soft);transform:scale(.98);}
+
+.tagline{text-align:center;font-size:11px;font-weight:800;color:var(--warm);text-transform:uppercase;letter-spacing:.4px;line-height:1.5;border-top:1px solid var(--line);padding-top:16px;margin-top:6px;}
+
+/* NAV */
+.nav{position:absolute;bottom:0;left:0;right:0;height:84px;background:rgba(255,254,254,.92);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;padding:10px 8px 22px;z-index:40;}
+.nav button{flex:1;border:none;background:none;font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-soft);transition:.18s;}
+.nav button .ic{font-size:21px;transition:.2s;}
+.nav button .lbl{font-size:10px;font-weight:800;letter-spacing:.2px;}
+.nav button.active{color:var(--purple);}
+.nav button.active .ic{transform:translateY(-2px) scale(1.08);}
+
+/* TOAST */
+.toast{position:absolute;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:30px;font-size:13px;font-weight:700;box-shadow:var(--shadow);opacity:0;transition:.3s;z-index:60;white-space:nowrap;max-width:88%;text-align:center;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* SHEET */
+.sheet-ov{position:absolute;inset:0;background:rgba(40,25,55,.45);backdrop-filter:blur(2px);z-index:70;opacity:0;pointer-events:none;transition:.28s;}
+.sheet-ov.show{opacity:1;pointer-events:auto;}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-radius:28px 28px 0 0;padding:14px 20px 26px;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.8,.2,1);max-height:88%;overflow-y:auto;}
+.sheet::-webkit-scrollbar{width:0;}
+.sheet-ov.show .sheet{transform:translateY(0);}
+.sheet-handle{width:42px;height:5px;border-radius:5px;background:var(--line);margin:0 auto 16px;}
+.sheet h3{font-family:'Fraunces',serif;font-size:21px;font-weight:600;letter-spacing:-.4px;margin-bottom:6px;}
+.sheet-sub{font-size:13px;color:var(--ink-soft);font-weight:600;line-height:1.5;margin-bottom:16px;}
+.reason-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.reason{display:flex;align-items:center;gap:11px;padding:13px 14px;border-radius:14px;border:2px solid var(--line);background:var(--white);font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ink);cursor:pointer;transition:.16s;text-align:left;width:100%;}
+.reason .ic{font-size:19px;flex-shrink:0;}
+.reason .ck{margin-left:auto;width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;transition:.16s;display:flex;align-items:center;justify-content:center;}
+.reason.sel{border-color:var(--purple);background:var(--lilac-soft);}
+.reason.sel .ck{background:var(--purple);border-color:var(--purple);color:#fff;font-size:12px;}
+.reason.sel .ck::after{content:'✓';}
+.reason:active{transform:scale(.985);}
+.reason-other{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;font-family:inherit;font-size:13.5px;font-weight:600;background:var(--white);color:var(--ink);outline:none;margin-bottom:16px;}
+.reason-other:focus{border-color:var(--purple);}
+.btn-quiet{width:100%;margin-top:10px;padding:12px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+.thanks{text-align:center;padding:14px 4px 4px;}
+.thanks .em{font-size:40px;display:block;margin-bottom:10px;}
+.thanks h3{margin-bottom:8px;}
+.thanks .tip{background:var(--lilac-soft);border-radius:16px;padding:15px 16px;font-size:13px;line-height:1.55;color:var(--purple-dark);font-weight:700;margin:6px 0 18px;text-align:left;}
+
+/* CADASTRO */
+.form-section{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:18px 16px;margin-bottom:14px;box-shadow:var(--shadow-soft);}
+.form-section-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--purple-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.form-group{margin-bottom:13px;}
+.form-group label{font-size:11.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px;}
+.form-input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--ink);outline:none;transition:.18s;}
+.form-input:focus{border-color:var(--purple);background:var(--white);}
+.form-select{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--ink);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2371608A' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;}
+.form-select:focus{border-color:var(--purple);}
+.form-row{display:flex;gap:10px;}
+.form-row .form-group{flex:1;}
+.cadastro-ok{background:linear-gradient(150deg,var(--lilac-soft),var(--pink-soft));border:1px solid var(--line);border-radius:20px;padding:20px 18px;margin-bottom:14px;text-align:center;}
+.cadastro-ok .em{font-size:36px;display:block;margin-bottom:8px;}
+.cadastro-ok h3{font-family:'Fraunces',serif;font-size:17px;font-weight:600;margin-bottom:4px;}
+.cadastro-ok p{font-size:12.5px;color:var(--ink-soft);font-weight:600;}
+.btn-edit{margin-top:12px;padding:10px 20px;border:1.5px solid var(--purple);border-radius:12px;background:transparent;font-family:inherit;font-size:12.5px;font-weight:800;color:var(--purple);cursor:pointer;}
+
+/* TCLE */
+.tcle-box{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:18px 16px;margin-bottom:14px;box-shadow:var(--shadow-soft);max-height:340px;overflow-y:auto;}
+.tcle-box::-webkit-scrollbar{width:4px;}
+.tcle-box::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+.tcle-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--purple-dark);margin-bottom:12px;}
+.tcle-text{font-size:12px;line-height:1.7;color:var(--ink-soft);font-weight:600;}
+.tcle-text p{margin-bottom:10px;}
+.tcle-text strong{color:var(--ink);font-weight:800;}
+.tcle-accept{background:var(--white);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+.tcle-accept input[type=checkbox]{width:20px;height:20px;accent-color:var(--purple);flex-shrink:0;margin-top:1px;cursor:pointer;}
+.tcle-accept span{font-size:13px;font-weight:700;color:var(--ink);line-height:1.4;}
+.tcle-signed{background:linear-gradient(150deg,#e8f5e9,#c8e6c9);border:1px solid #a5d6a7;border-radius:16px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:#2e7d32;}
+
+@media (display-mode:standalone),(max-width:440px){
+  body{padding:0;background:var(--bg);}
+  .phone{width:100%;height:100vh;height:100dvh;max-height:none;border-radius:0;box-shadow:none;}
+  .notch{display:none;}
+  .topbar{padding-top:calc(env(safe-area-inset-top,0px) + 22px);}
+  .nav{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 16px);}
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo">🦘</div>
+      <div>
+        <h1>Vamos Cangurar!</h1>
+        <p>Método Canguru · pele a pele</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap" id="wrap">
+
+    <!-- TIMER -->
+    <section class="screen" id="s-timer">
+      <h2 class="screen-title">Iniciar sessão</h2>
+      <p class="screen-sub">Registre cada contato pele a pele em tempo real.</p>
+      <div class="caregiver-pick">
+        <label>Quem vai cangurar agora?</label>
+        <div class="chips" id="chips">
+          <button class="chip sel" data-c="Mãe"><span class="ic">🤱</span>Mãe</button>
+          <button class="chip" data-c="Pai"><span class="ic">👨</span>Pai</button>
+          <button class="chip" data-c="Outro"><span class="ic">🫶</span>Outro</button>
+        </div>
+      </div>
+      <div class="timer-card">
+        <div class="dial" id="dial">
+          <svg width="218" height="218" viewBox="0 0 218 218">
+            <defs>
+              <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#D87AAE"/>
+                <stop offset="100%" stop-color="#7A4BA8"/>
+              </linearGradient>
+            </defs>
+            <circle class="bg" cx="109" cy="109" r="97"/>
+            <circle class="fg" id="ring" cx="109" cy="109" r="97"/>
+          </svg>
+          <div class="dial-center">
+            <div class="dial-time" id="clock">00:00</div>
+            <div class="dial-label" id="dialLabel">Pronto para começar</div>
+          </div>
+        </div>
+        <button class="btn-main" id="toggleBtn">Iniciar contato</button>
+        <button class="btn-skip" id="skipBtn">Agora não vou conseguir cangurar</button>
+      </div>
+      <div class="today-strip">
+        <div class="stat"><div class="v" id="todayCount">0</div><div class="l">sessões hoje</div></div>
+        <div class="stat"><div class="v" id="todayTotal">0min</div><div class="l">total hoje</div></div>
+      </div>
+    </section>
+
+    <!-- HISTÓRICO -->
+    <section class="screen" id="s-hist" style="display:none;">
+      <h2 class="screen-title">Histórico</h2>
+      <p class="screen-sub">Acompanhe o tempo de canguru por dia e semana.</p>
+      <div class="week-card">
+        <div class="top">Esta semana</div>
+        <div class="big" id="weekTotal">0h 0min</div>
+        <div class="note">Cada minuto pele a pele conta 💜</div>
+        <div class="week-bars" id="weekBars"></div>
+      </div>
+      <div id="histList"></div>
+      <button class="btn-export" id="exportBtn">⬇️ Exportar dados da pesquisa</button>
+    </section>
+
+    <!-- APRENDER -->
+    <section class="screen" id="s-edu" style="display:none;">
+      <h2 class="screen-title">Aprender</h2>
+      <p class="screen-sub">Conteúdos sobre o Método Canguru e o cuidado do seu bebê.</p>
+      <div id="eduList"></div>
+      <div class="tagline">O cuidado mãe-canguru melhora substancialmente a sobrevivência do bebê!</div>
+    </section>
+
+    <!-- CADASTRO -->
+    <section class="screen" id="s-cad" style="display:none;">
+      <h2 class="screen-title">Cadastro</h2>
+      <p class="screen-sub">Dados epidemiológicos da participante. A DNV é o identificador do estudo — nenhum nome é armazenado.</p>
+
+      <!-- Status cadastrado -->
+      <div class="cadastro-ok" id="cadOk" style="display:none;">
+        <span class="em">✅</span>
+        <h3 id="cadNomeMae"></h3>
+        <p id="cadResumoBebe"></p>
+        <button class="btn-edit" id="cadEditBtn">Editar cadastro</button>
+      </div>
+
+      <!-- Formulário -->
+      <div id="cadForm">
+
+        <!-- TCLE -->
+        <div class="tcle-box">
+          <div class="tcle-title">📋 Termo de Consentimento Livre e Esclarecido (TCLE)</div>
+          <div class="tcle-text">
+            <p>Você está sendo convidada a participar de uma pesquisa científica intitulada <strong>"Vamos Cangurar! — Avaliação de um aplicativo digital de suporte ao Método Canguru na 3ª etapa"</strong>, desenvolvida por pesquisadores vinculados a uma instituição de ensino e pesquisa em saúde.</p>
+            <p><strong>Objetivo:</strong> Avaliar o uso de um aplicativo móvel como ferramenta de apoio à prática do Método Canguru por famílias de recém-nascidos de baixo peso após a alta hospitalar, verificando adesão, barreiras e satisfação das participantes.</p>
+            <p><strong>O que será pedido a você:</strong> Utilizar o aplicativo diariamente para registrar as sessões de canguru realizadas e informar quando não for possível realizá-las. Seus dados são identificados apenas pelo número da Declaração de Nascido Vivo (DNV) do bebê — <strong>nenhum nome é coletado ou armazenado.</strong></p>
+            <p><strong>Riscos:</strong> Risco mínimo. Não há procedimentos invasivos. O único desconforto possível é o tempo dedicado ao registro. Você pode recusar-se a responder qualquer questão sem prejuízo algum ao atendimento que você e seu bebê recebem.</p>
+            <p><strong>Benefícios:</strong> Sua participação contribuirá para o desenvolvimento de ferramentas digitais que podem melhorar o cuidado de bebês prematuros e de baixo peso. Você também terá acesso a informações qualificadas sobre o Método Canguru diretamente no aplicativo.</p>
+            <p><strong>Confidencialidade e anonimato:</strong> Seus dados são identificados exclusivamente pelo número da DNV, sem qualquer informação que permita sua identificação. Os dados serão armazenados de forma segura, acessados apenas pela equipe de pesquisa, e utilizados exclusivamente para fins científicos.</p>
+            <p><strong>Voluntariedade:</strong> Sua participação é completamente voluntária. Você pode desistir a qualquer momento, sem qualquer penalidade ou prejuízo ao atendimento de você e do seu bebê.</p>
+            <p><strong>Contato:</strong> Em caso de dúvidas sobre a pesquisa, entre em contato com o pesquisador responsável. Para dúvidas sobre seus direitos como participante, consulte o Comitê de Ética em Pesquisa (CEP) da instituição responsável.</p>
+            <p>Ao marcar a opção abaixo, você declara que leu e compreendeu as informações acima e concorda voluntariamente em participar desta pesquisa.</p>
+          </div>
+        </div>
+
+        <label class="tcle-accept" id="tcleAcceptLabel">
+          <input type="checkbox" id="tcleCheck">
+          <span>Li e compreendi o TCLE. Concordo voluntariamente em participar desta pesquisa.</span>
+        </label>
+
+        <!-- Dados da mãe / responsável -->
+        <div class="form-section">
+          <div class="form-section-title">🤱 Dados da mãe / responsável</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Idade (anos)</label>
+              <input class="form-input" id="maeIdade" type="number" min="12" max="60" placeholder="Ex: 26">
+            </div>
+            <div class="form-group">
+              <label>Nº de filhos (paridade)</label>
+              <input class="form-input" id="maeParidade" type="number" min="1" max="20" placeholder="Ex: 2">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Escolaridade</label>
+            <select class="form-select" id="maeEscolaridade">
+              <option value="">Selecione...</option>
+              <option>Sem escolaridade</option>
+              <option>Fundamental incompleto</option>
+              <option>Fundamental completo</option>
+              <option>Médio incompleto</option>
+              <option>Médio completo</option>
+              <option>Superior incompleto</option>
+              <option>Superior completo</option>
+              <option>Pós-graduação</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Situação de trabalho</label>
+            <select class="form-select" id="maeTrabalho">
+              <option value="">Selecione...</option>
+              <option>Não trabalha</option>
+              <option>CLT / emprego formal</option>
+              <option>Trabalho informal / autônoma</option>
+              <option>Funcionária pública</option>
+              <option>Empresária / MEI</option>
+              <option>Do lar</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Renda familiar mensal</label>
+            <select class="form-select" id="maeRenda">
+              <option value="">Selecione...</option>
+              <option>Até R$ 600 (até ½ SM)</option>
+              <option>R$ 601 – R$ 1.412 (até 1 SM)</option>
+              <option>R$ 1.413 – R$ 2.824 (1–2 SM)</option>
+              <option>R$ 2.825 – R$ 5.648 (2–4 SM)</option>
+              <option>Acima de R$ 5.648 (+ de 4 SM)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dados do bebê -->
+        <div class="form-section">
+          <div class="form-section-title">👶 Dados do bebê</div>
+
+          <div class="form-group">
+            <label>DNV — Declaração de Nascido Vivo ✱</label>
+            <input class="form-input" id="bebeDNV" type="text" placeholder="Número da DNV (obrigatório)">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Data de nascimento</label>
+              <input class="form-input" id="bebeNasc" type="date">
+            </div>
+            <div class="form-group">
+              <label>Peso ao nascer (g)</label>
+              <input class="form-input" id="bebePeso" type="number" min="300" max="4500" placeholder="Ex: 1450">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Idade gestacional</label>
+            <input class="form-input" id="bebeIG" type="text" placeholder="Ex: 30s 2d">
+          </div>
+        </div>
+
+        <button class="btn-main" id="cadSalvar">Salvar cadastro</button>
+        <div style="height:8px;"></div>
+      </div>
+    </section>
+
+</div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- SHEET -->
+  <div class="sheet-ov" id="sheetOv">
+    <div class="sheet" id="sheet">
+      <div class="sheet-handle"></div>
+      <div id="sheetForm">
+        <h3>Agora não dá? Tudo bem 💜</h3>
+        <p class="sheet-sub">Cangurar nem sempre é possível — e isso faz parte. Se quiser, conte o que está acontecendo (pode marcar mais de um motivo). Isso ajuda a equipe a te apoiar melhor.</p>
+        <div class="reason-grid" id="reasonGrid"></div>
+        <input class="reason-other" id="reasonOther" placeholder="Outro motivo (opcional)">
+        <button class="btn-main" id="reasonSubmit">Registrar</button>
+        <button class="btn-quiet" id="reasonSkip">Agora não quero responder</button>
+      </div>
+      <div class="thanks" id="sheetThanks" style="display:none;">
+        <span class="em">💜</span>
+        <h3>Obrigada por contar</h3>
+        <div class="tip" id="tipBox"></div>
+        <button class="btn-main" id="thanksClose">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="active" data-s="s-timer"><span class="ic">⏱️</span><span class="lbl">Sessão</span></button>
+    <button data-s="s-hist"><span class="ic">📊</span><span class="lbl">Histórico</span></button>
+    <button data-s="s-cad"><span class="ic">👤</span><span class="lbl">Cadastro</span></button>
+    <button data-s="s-edu"><span class="ic">📖</span><span class="lbl">Aprender</span></button>
+  </nav>
+</div>
+
+<script>
+let sessions=[], skips=[], caregiver='Mãe', running=false, startTime=null, tick=null, cadastro=null;
+const RING_LEN=609;
+
+// ── PERSISTÊNCIA localStorage ─────────────────────────────
+function salvarDados(){
+  try{
+    localStorage.setItem('vc_sessions', JSON.stringify(sessions));
+    localStorage.setItem('vc_skips',    JSON.stringify(skips));
+    if(cadastro) localStorage.setItem('vc_cadastro', JSON.stringify(cadastro));
+  }catch(e){ console.warn('Erro ao salvar:', e); }
+}
+
+function carregarDados(){
+  try{
+    const s = localStorage.getItem('vc_sessions');
+    const k = localStorage.getItem('vc_skips');
+    const c = localStorage.getItem('vc_cadastro');
+    if(s) sessions = JSON.parse(s).map(x=>({...x, start:new Date(x.start), end:new Date(x.end)}));
+    if(k) skips    = JSON.parse(k).map(x=>({...x, start:new Date(x.start)}));
+    if(c) cadastro = JSON.parse(c);
+  }catch(e){ console.warn('Erro ao carregar:', e); }
+}
+
+// Carrega dados salvos (ou usa seed de demo se for a primeira vez)
+carregarDados();
+if(sessions.length === 0 && skips.length === 0){
+  // Seed apenas na primeira abertura, para demonstração
+  (function seed(){
+    const now=new Date();
+    function mk(d,h,mi,dur,who){const x=new Date(now);x.setDate(x.getDate()-d);x.setHours(h,mi,0,0);sessions.push({caregiver:who,start:x,end:new Date(x.getTime()+dur*60000),durSec:dur*60});}
+    function sk(d,h,mi,r){const x=new Date(now);x.setDate(x.getDate()-d);x.setHours(h,mi,0,0);skips.push({start:x,reasons:r});}
+    mk(0,9,15,52,'Mãe'); mk(0,14,30,41,'Pai'); sk(0,12,0,['Calor']);
+    mk(1,8,0,63,'Mãe'); mk(1,16,10,38,'Mãe'); sk(1,21,30,['Ocupada, toma muito tempo']);
+    mk(2,10,0,47,'Pai'); mk(3,11,20,55,'Mãe');
+    salvarDados(); // salva o seed imediatamente
+  })();
+}
+
+const $=s=>document.querySelector(s);
+const fmtClock=sec=>String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
+const fmtDur=sec=>{const m=Math.round(sec/60);return m<60?m+'min':Math.floor(m/60)+'h '+(m%60)+'min';};
+const fmtTime=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+const sameDay=(a,b)=>a.toDateString()===b.toDateString();
+function dayLabel(d){const now=new Date();if(sameDay(d,now))return 'Hoje';const y=new Date(now);y.setDate(y.getDate()-1);if(sameDay(d,y))return 'Ontem';const dias=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];return dias[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1);}
+const avatar=w=>w==='Mãe'?'🤱':w==='Pai'?'👨':'🫶';
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ── GOOGLE SHEETS ─────────────────────────────────────────
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwXdOsMjUnqHRyhhImwXVxj2lGfXBZSfZpWH_OjrmxQJBKUq8XydBqq7knfcREdLSbh/exec';
+
+function enviarParaSheet(payload){
+  const dnv = cadastro ? cadastro.bebeDNV : 'sem-cadastro';
+  const base = {
+    dnv,
+    bebeNasc:         cadastro ? cadastro.bebeNasc        : '',
+    bebePeso:         cadastro ? cadastro.bebePeso         : '',
+    bebeIG:           cadastro ? cadastro.bebeIG           : '',
+    maeIdade:         cadastro ? cadastro.maeIdade         : '',
+    maeParidade:      cadastro ? cadastro.maeParidade      : '',
+    maeEscolaridade:  cadastro ? cadastro.maeEscolaridade  : '',
+    maeTrabalho:      cadastro ? cadastro.maeTrabalho      : '',
+    maeRenda:         cadastro ? cadastro.maeRenda         : '',
+    tcleData:         cadastro ? cadastro.tcleData         : '',
+  };
+  const dados = {...base, ...payload};
+  fetch(SHEET_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(dados)
+  }).catch(e => console.warn('Envio sheet falhou:', e));
+}
+
+
+
+// Timer — listener do botão principal
+$('#toggleBtn').addEventListener('click', () => running ? stopSession() : startSession());
+
+// Chips — seleção de cuidador
+$('#chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip');
+  if(!c || running) return;
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('sel'));
+  c.classList.add('sel');
+  caregiver = c.dataset.c;
+});
+
+function startSession(){
+  running=true;startTime=new Date();
+  $('#toggleBtn').textContent='Encerrar contato';
+  $('#toggleBtn').classList.add('stop');
+  $('#dial').classList.add('run');
+  $('#dialLabel').innerHTML='<span class="pulse-dot"></span>Em andamento';
+  $('#skipBtn').style.display='none';
+  document.querySelectorAll('.chip').forEach(x=>x.style.opacity='.5');
+  tick=setInterval(update,1000);update();
+}
+
+function update(){
+  const sec=Math.floor((Date.now()-startTime)/1000);
+  $('#clock').textContent=fmtClock(sec);
+  $('#ring').style.strokeDashoffset=RING_LEN*(1-Math.min((sec%3600)/3600,1));
+}
+
+function stopSession(){
+  clearInterval(tick);running=false;
+  const end=new Date();const durSec=Math.floor((end-startTime)/1000);
+  sessions.push({caregiver,start:startTime,end,durSec});
+  $('#toggleBtn').textContent='Iniciar contato';
+  $('#toggleBtn').classList.remove('stop');
+  $('#dial').classList.remove('run');
+  $('#clock').textContent='00:00';
+  $('#ring').style.strokeDashoffset=RING_LEN;
+  $('#dialLabel').textContent='Pronto para começar';
+  $('#skipBtn').style.display='block';
+  document.querySelectorAll('.chip').forEach(x=>x.style.opacity='1');
+  toast('✓ Sessão registrada: '+fmtDur(durSec));
+  salvarDados();
+  enviarParaSheet({
+    tipo: 'sessao',
+    data: startTime.toLocaleDateString('pt-BR'),
+    horaInicio: fmtTime(startTime),
+    horaFim: fmtTime(end),
+    duracaoMin: (durSec/60).toFixed(1),
+    cuidador: caregiver,
+    motivos: ''
+  });
+  renderToday();renderHist();
+}
+
+// Today stats
+function renderToday(){
+  const now=new Date();
+  const t=sessions.filter(s=>sameDay(s.start,now));
+  $('#todayCount').textContent=t.length;
+  $('#todayTotal').textContent=fmtDur(t.reduce((a,s)=>a+s.durSec,0));
+}
+
+// Skip sheet
+const reasons=[
+  {ic:'🥵',t:'Calor'},
+  {ic:'😳',t:'Vergonha'},
+  {ic:'😕',t:'Não gosto'},
+  {ic:'👶',t:'Ele não quer'},
+  {ic:'⏳',t:'Ocupada, toma muito tempo'}
+];
+const tips={
+  'Calor':'Em dias quentes, prefira os horários mais frescos e mantenha o ambiente arejado. Roupas leves para você e só a fralda no bebê deixam os dois mais confortáveis.',
+  'Vergonha':'Obrigada por confiar isso à gente. Se quiser, a equipe pode ajudar a encontrar um cantinho mais reservado para os momentos de canguru.',
+  'Não gosto':'Tudo bem sentir isso — obrigada por ser sincera. Se quiser conversar sobre o que incomoda, a equipe está por perto.',
+  'Ele não quer':'Às vezes o bebê precisa de um tempinho para se aconchegar. Experimente em um momento calmo, antes da mamada — e a equipe pode ajudar a posicionar.',
+  'Ocupada, toma muito tempo':'Você pode cangurar enquanto faz outras coisas — descansando, lendo ou nas refeições, com a faixa. Dividir com o pai ou outro familiar também alivia a rotina.'
+};
+let selReasons=new Set();
+
+function renderReasons(){
+  $('#reasonGrid').innerHTML=reasons.map(r=>`<button class="reason" data-t="${r.t}"><span class="ic">${r.ic}</span>${r.t}<span class="ck"></span></button>`).join('');
+  document.querySelectorAll('.reason').forEach(b=>b.addEventListener('click',()=>{
+    const t=b.dataset.t;
+    if(selReasons.has(t)){selReasons.delete(t);b.classList.remove('sel');}
+    else{selReasons.add(t);b.classList.add('sel');}
+  }));
+}
+
+function openSheet(){
+  selReasons.clear();
+  $('#reasonOther').value='';
+  renderReasons();
+  $('#sheetForm').style.display='block';
+  $('#sheetThanks').style.display='none';
+  $('#sheetOv').classList.add('show');
+}
+function closeSheet(){$('#sheetOv').classList.remove('show');}
+
+$('#skipBtn').addEventListener('click',openSheet);
+$('#sheetOv').addEventListener('click',e=>{if(e.target===$('#sheetOv'))closeSheet();});
+$('#reasonSkip').addEventListener('click',()=>{
+  const agora = new Date();
+  skips.push({start:agora,reasons:[]});
+  closeSheet();
+  salvarDados();
+  enviarParaSheet({
+    tipo: 'nao_canguru',
+    data: agora.toLocaleDateString('pt-BR'),
+    horaInicio: fmtTime(agora),
+    horaFim: '', duracaoMin: '', cuidador: '',
+    motivos: 'não informado'
+  });
+  toast('Registrado. Estamos aqui quando precisar 💜');
+  renderHist();
+});
+$('#reasonSubmit').addEventListener('click',()=>{
+  const list=[...selReasons];const other=$('#reasonOther').value.trim();if(other)list.push(other);
+  if(list.length===0){toast('Toque em um ou mais motivos, ou escreva, se quiser 💜');return;}
+  const agora2 = new Date();
+  skips.push({start:agora2,reasons:list});
+  salvarDados();
+  enviarParaSheet({
+    tipo: 'nao_canguru',
+    data: agora2.toLocaleDateString('pt-BR'),
+    horaInicio: fmtTime(agora2),
+    horaFim: '', duracaoMin: '', cuidador: '',
+    motivos: list.join(' | ')
+  });
+  const first=[...selReasons][0];
+  $('#tipBox').textContent=tips[first]||'Quando você se sentir pronta, é só voltar aqui. Cada momento de contato faz diferença para o seu bebê.';
+  $('#sheetForm').style.display='none';
+  $('#sheetThanks').style.display='block';
+  renderHist();
+});
+$('#thanksClose').addEventListener('click',closeSheet);
+
+// Histório
+function renderHist(){
+  const now=new Date();const days=[];let weekSec=0;
+  const wd=['D','S','T','Q','Q','S','S'];
+  for(let i=6;i>=0;i--){
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    const sec=sessions.filter(s=>sameDay(s.start,d)).reduce((a,s)=>a+s.durSec,0);
+    weekSec+=sec;days.push({d,sec});
+  }
+  $('#weekTotal').textContent=fmtDur(weekSec);
+  const maxSec=Math.max(...days.map(d=>d.sec),1);
+  $('#weekBars').innerHTML=days.map(o=>`<div class="b" style="height:${Math.max((o.sec/maxSec)*54,5)}px"><span>${wd[o.d.getDay()]}</span></div>`).join('');
+
+  const items=sessions.map(s=>({...s,kind:'s'})).concat(skips.map(k=>({...k,kind:'k'}))).sort((a,b)=>b.start-a.start);
+  const groups={};items.forEach(it=>{const key=it.start.toDateString();(groups[key]=groups[key]||[]).push(it);});
+  const keys=Object.keys(groups).sort((a,b)=>new Date(b)-new Date(a));
+
+  if(keys.length===0){
+    $('#histList').innerHTML='<div class="empty"><span class="em">🦘</span><p>Nenhuma sessão ainda.<br>Inicie seu primeiro contato pele a pele!</p></div>';
+    return;
+  }
+  $('#histList').innerHTML=keys.map(key=>{
+    const arr=groups[key];
+    const total=arr.filter(i=>i.kind==='s').reduce((a,s)=>a+s.durSec,0);
+    const rows=arr.map(it=>{
+      if(it.kind==='s')return `<div class="session"><div class="av">${avatar(it.caregiver)}</div><div class="info"><div class="who">${it.caregiver}</div><div class="when">${fmtTime(it.start)} – ${fmtTime(it.end)}</div></div><div class="dur">${fmtDur(it.durSec)}</div></div>`;
+      const motivo=it.reasons&&it.reasons.length?it.reasons.join(' · '):'Motivo não informado';
+      return `<div class="session skip"><div class="av">🌙</div><div class="info"><div class="who">Não foi possível cangurar</div><div class="when">${fmtTime(it.start)} · ${motivo}</div></div></div>`;
+    }).join('');
+    return `<div class="day-group"><div class="day-head"><span class="d">${dayLabel(new Date(key))}</span><span class="t">${fmtDur(total)}</span></div>${rows}</div>`;
+  }).join('');
+}
+
+// Educação
+const edu=[
+  {ic:'💜',bg:'linear-gradient(150deg,#E7CFF2,#C99BDB)',tag:'Você sabia?',
+   t:'Vantagens do canguru',d:'Os benefícios comprovados do contato pele a pele para o seu bebê.',
+   html:'<ul><li>Diminui o risco de morte do recém-nascido em até <b>40%</b>.</li><li>Diminui o risco de infecção em até <b>50%</b>.</li><li>Previne a hipotermia — ajuda a manter a temperatura do bebê.</li><li>Favorece o ganho de peso e o crescimento.</li></ul>'},
+  {ic:'🏠',bg:'linear-gradient(150deg,#F3D4E6,#DDA0C4)',tag:'No dia a dia',
+   t:'Canguru e as atividades do dia',d:'Você pode manter o bebê na posição canguru enquanto faz suas tarefas.',
+   html:'Com a faixa, o bebê fica protegido e calmo enquanto você estende a roupa, faz as refeições, lê ou descansa. <b>Quanto mais tempo nessa posição, maiores são os benefícios.</b>'},
+  {ic:'🧵',bg:'linear-gradient(150deg,#D9C2EC,#B48BD6)',tag:'Passo a passo',
+   t:'Como colocar a faixa do canguru',d:'Monte e use a faixa com segurança em poucos passos.',
+   html:'Use um tecido macio de <b>3 m × 50 cm</b>, cortado nas laterais para formar duas alças. Enrole a alça inferior nas costas, cruze, traga à frente e dê um nó seguro; repita com a alça superior, cruzando nas costas e por cima dos ombros. Posicione o bebê na bolsa e amarre as tiras com nó quadrado, deixando a cabeça firme.<br><br><span class="warn">Lembre-se: canguru não é sling! O bebê fica só de fralda, na vertical, em contato pele a pele, sem roupa entre os dois — e bem firme.</span>'},
+  {ic:'🏥',bg:'linear-gradient(150deg,#EAD9F2,#CBA7E0)',tag:'3ª Etapa',
+   t:'O acompanhamento no ambulatório',d:'A 3ª etapa acompanha você e o bebê até ele atingir 2.500 g.',
+   html:'O ambulatório do Método Canguru acompanha a criança e a família em casa. <b>As consultas regulares são essenciais</b> — a alta definitiva do bebê de baixo peso só acontece após essa etapa. Lembre-se: ir para casa é uma licença, não a alta definitiva.'},
+  {ic:'⚠️',bg:'linear-gradient(150deg,#C99BDB,#7A4BA8)',tag:'Segurança',
+   t:'Sinais de alerta',d:'Quando procurar a maternidade.',
+   html:'Procure a equipe se notar:<ul><li><b>Febre</b> (≥ 37,8 °C): tire a roupa do bebê, espere 5 min e meça de novo; se não baixar, procure atendimento de urgência.</li><li>Pausas ou desconforto respiratório.</li><li>Irritação intensa.</li><li>Regurgitação frequente com perda de peso.</li><li>Diminuição ou recusa do peito.</li><li>Ganho de peso insuficiente ou perda de peso.</li></ul>'}
+];
+
+function renderEdu(){
+  $('#eduList').innerHTML=edu.map(e=>`<div class="edu-card"><div class="edu-banner" style="background:${e.bg}"><span class="tag">${e.tag}</span><span style="font-size:42px">${e.ic}</span></div><div class="edu-body"><h3>${e.t}</h3><p>${e.d}</p></div><div class="edu-detail">${e.html}</div></div>`).join('');
+  document.querySelectorAll('.edu-card').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('open')));
+}
+
+// Nav
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(x=>x.style.display='none');
+  b.classList.add('active');
+  $('#'+b.dataset.s).style.display='block';
+  $('#wrap').scrollTop=0;
+}));
+
+// ── CADASTRO ──────────────────────────────────────────────
+
+function renderCadastro(){
+  if(cadastro){
+    $('#cadOk').style.display = 'block';
+    $('#cadForm').style.display = 'none';
+    $('#cadNomeMae').textContent = 'Participante cadastrada ✓';
+    $('#cadResumoBebe').textContent = `DNV ${cadastro.bebeDNV} · ${cadastro.bebePeso}g · IG ${cadastro.bebeIG}`;
+  } else {
+    $('#cadOk').style.display = 'none';
+    $('#cadForm').style.display = 'block';
+  }
+}
+
+$('#cadSalvar').addEventListener('click', () => {
+  if(!$('#tcleCheck').checked){
+    toast('Por favor, leia e aceite o TCLE para continuar 💜'); return;
+  }
+  const bebeDNV = $('#bebeDNV').value.trim();
+  if(!bebeDNV){ toast('O número da DNV é obrigatório ✱'); return; }
+
+  cadastro = {
+    tcleAceito: true,
+    tcleData: new Date().toISOString(),
+    maeIdade: $('#maeIdade').value,
+    maeParidade: $('#maeParidade').value,
+    maeEscolaridade: $('#maeEscolaridade').value,
+    maeTrabalho: $('#maeTrabalho').value,
+    maeRenda: $('#maeRenda').value,
+    bebeDNV,
+    bebeNasc: $('#bebeNasc').value,
+    bebePeso: $('#bebePeso').value,
+    bebeIG: $('#bebeIG').value,
+  };
+  renderCadastro();
+  salvarDados();
+  enviarParaSheet({
+    tipo: 'cadastro',
+    data: new Date().toLocaleDateString('pt-BR'),
+    horaInicio: '', horaFim: '', duracaoMin: '', cuidador: '', motivos: ''
+  });
+  toast('✓ Cadastro salvo!');
+});
+
+$('#cadEditBtn').addEventListener('click', () => {
+  $('#cadOk').style.display = 'none';
+  $('#cadForm').style.display = 'block';
+  if(cadastro){
+    $('#tcleCheck').checked = true;
+    $('#maeIdade').value = cadastro.maeIdade;
+    $('#maeParidade').value = cadastro.maeParidade;
+    $('#maeEscolaridade').value = cadastro.maeEscolaridade;
+    $('#maeTrabalho').value = cadastro.maeTrabalho;
+    $('#maeRenda').value = cadastro.maeRenda;
+    $('#bebeDNV').value = cadastro.bebeDNV;
+    $('#bebeNasc').value = cadastro.bebeNasc;
+    $('#bebePeso').value = cadastro.bebePeso;
+    $('#bebeIG').value = cadastro.bebeIG;
+  }
+});
+
+// ── EXPORTAR CSV ──────────────────────────────────────────
+$('#exportBtn').addEventListener('click', exportCSV);
+
+function exportCSV(){
+  const rows = [];
+
+  // Dados da participante
+  rows.push(['=== DADOS DA PARTICIPANTE ===']);
+  rows.push(['campo','valor']);
+  if(cadastro){
+    rows.push(['TCLE aceito', cadastro.tcleAceito ? 'Sim' : 'Não']);
+    rows.push(['Data aceite TCLE', new Date(cadastro.tcleData).toLocaleString('pt-BR')]);
+    rows.push(['DNV bebê', cadastro.bebeDNV]);
+    rows.push(['Data de nascimento bebê', cadastro.bebeNasc]);
+    rows.push(['Peso ao nascer (g)', cadastro.bebePeso]);
+    rows.push(['Idade gestacional', cadastro.bebeIG]);
+    rows.push(['Idade mãe (anos)', cadastro.maeIdade]);
+    rows.push(['Paridade', cadastro.maeParidade]);
+    rows.push(['Escolaridade', cadastro.maeEscolaridade]);
+    rows.push(['Situação de trabalho', cadastro.maeTrabalho]);
+    rows.push(['Renda familiar', cadastro.maeRenda]);
+  } else {
+    rows.push(['(cadastro não preenchido)', '']);
+  }
+
+  rows.push([]);
+  rows.push(['=== SESSOES DE CANGURU ===']);
+  rows.push(['tipo','data','hora_inicio','hora_fim','duracao_min','cuidador','motivos_nao_canguru']);
+
+  sessions.forEach(s => {
+    rows.push(['sessao',
+      s.start.toLocaleDateString('pt-BR'),
+      fmtTime(s.start), fmtTime(s.end),
+      (s.durSec/60).toFixed(1), s.caregiver, '']);
+  });
+  skips.forEach(k => {
+    rows.push(['nao_canguru',
+      k.start.toLocaleDateString('pt-BR'),
+      fmtTime(k.start), '', '', '',
+      k.reasons&&k.reasons.length ? k.reasons.join(' | ') : 'não informado']);
+  });
+
+  rows.push([]);
+  rows.push(['=== RESUMO DIARIO ===']);
+  rows.push(['data','total_min','n_sessoes']);
+  const diasMap = {};
+  sessions.forEach(s => {
+    const key = s.start.toLocaleDateString('pt-BR');
+    if(!diasMap[key]) diasMap[key]={total:0,n:0};
+    diasMap[key].total += s.durSec/60;
+    diasMap[key].n += 1;
+  });
+  Object.entries(diasMap).sort().forEach(([d,v]) => {
+    rows.push([d, v.total.toFixed(1), v.n]);
+  });
+
+  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const hoje = new Date().toISOString().slice(0,10);
+  const nome = cadastro ? `dnv${cadastro.bebeDNV}` : 'sem-cadastro';
+  a.href = url;
+  a.download = `cangurar-${nome}-${hoje}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✓ CSV exportado com sucesso!');
+}
+
+renderToday();renderHist();renderEdu();renderCadastro();
+
+// Registra Service Worker (PWA)
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('SW registrado ✓'))
+      .catch(e => console.warn('SW falhou:', e));
+  });
+}
+
+</script>
+</body>
+</html>
