@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0-demo.1",
+  "mode": "demonstration",
+  "date": "2026-10-21",
+  "author": "Jefferson Guilherme",
+  "source_repository": "https://github.com/jeffeped/Vamos_cangurar",
+  "source_commit": "bd7363221a375c89e8f5fe91673379076713d6a8",
+  "cep": {
+    "parecer": "8.818.180",
+    "date": "2026-10-21",
+    "caae": "01802926.5.0000.5016"
+  },
+  "data": "fictional-only",
+  "research_ready": false
+}

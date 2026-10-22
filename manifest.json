@@ -1,7 +1,7 @@
 {
-  "name": "Vamos Cangurar!",
-  "short_name": "Cangurar",
-  "description": "Apoio ao Método Canguru na 3ª etapa — registro pele a pele",
+  "name": "Vamos Cangurar! · Demo",
+  "short_name": "Cangurar Demo",
+  "description": "Protótipo 0.2.0-demo.1 — demonstração com dados fictícios",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F5EFFB",
@@ -23,3 +23,4 @@
     }
   ]
 }
+
