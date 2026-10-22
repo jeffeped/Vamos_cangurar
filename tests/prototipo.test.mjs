@@ -14,7 +14,7 @@ function boot(storage=new Map(),time=Date.now()){
  return {run:s=>vm.runInContext(s,context),advance:ms=>now+=ms,storage,requests,blobs,node};
 }
 test('Demonstração identificada na interface e sem identificadores diretos',()=>{
- assert.match(html,/0\.2\.0-demo\.1/);assert.match(html,/dados fictícios/i);
+ assert.match(html,/0\.2\.0-demo\.3/);assert.match(html,/dados fictícios/i);
  assert.doesNotMatch(html,/<input[^>]+id="(?:bebeDNV|bebeNasc|maeIdade|reasonOther)"/);
  assert.doesNotMatch(html,/Concordo voluntariamente em participar desta pesquisa/);
 });
@@ -34,7 +34,7 @@ test('Cronômetro preserva uma sessão em andamento após recarregar',()=>{
 test('CSV identifica explicitamente versão, demonstração e horários completos',async()=>{
  const a=boot();a.run('startSession()');a.advance(125000);a.run('stopSession()');a.run('exportCSV()');
  const csv=await a.blobs.at(-1).text();
- assert.match(csv,/0\.2\.0-demo\.1/);assert.match(csv,/DEMONSTRACAO/);assert.match(csv,/DEMO-001/);
+ assert.match(csv,/0\.2\.0-demo\.3/);assert.match(csv,/DEMONSTRACAO/);assert.match(csv,/DEMO-001/);
  assert.match(csv,/inicio_iso/);assert.match(csv,/fim_iso/);assert.doesNotMatch(csv,/DNV|renda|trabalho|TCLE aceito/);
 });
 test('Armazenamento indisponível é comunicado sem bloquear o cronômetro',()=>{

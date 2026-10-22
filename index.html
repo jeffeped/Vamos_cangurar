@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vamos Cangurar! · Demonstração</title>
 <meta name="author" content="Jefferson Guilherme">
-<meta name="app-version" content="0.2.0-demo.1">
+<meta name="app-version" content="0.2.0-demo.3">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <link rel="apple-touch-icon" href="icon-192.png">
 
@@ -114,6 +114,8 @@ body{
 .edu-card:active{transform:scale(.985);}
 .edu-banner{height:104px;display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;}
 .edu-banner .tag{position:absolute;top:11px;left:11px;background:rgba(255,255,255,.92);color:var(--purple-dark);font-size:10px;font-weight:800;padding:4px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
+.edu-banner.has-image{height:auto;display:block;}
+.edu-banner img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:contain;}
 .edu-body{padding:14px 16px 16px;}
 .edu-body h3{font-family:'Fraunces',serif;font-size:16.5px;font-weight:600;line-height:1.25;margin-bottom:5px;}
 .edu-body p{font-size:12.5px;color:var(--ink-soft);font-weight:600;line-height:1.5;}
@@ -230,7 +232,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
   </div>
 
   <div class="screen-wrap" id="wrap">
-<div class="demo-banner" role="note"><strong>Protótipo 0.2.0-demo.1</strong><br>Demonstração com dados fictícios · DEMO-001<br>Não use dados de participantes.</div><p class="demo-note" id="storageStatus" role="status" aria-live="polite"></p>
+<div class="demo-banner" role="note"><strong>Protótipo 0.2.0-demo.3</strong><br>Demonstração com dados fictícios · DEMO-001<br>Não use dados de participantes.</div><p class="demo-note" id="storageStatus" role="status" aria-live="polite"></p>
 
     <!-- TIMER -->
     <section class="screen" id="s-timer">
@@ -276,10 +278,10 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
       <button class="btn-export" id="exportBtn">⬇️ Exportar demonstração (CSV)</button>
     </section>
 
-    <!-- APRENDER -->
+    <!-- DICAS -->
     <section class="screen" id="s-edu" style="display:none;">
-      <h2 class="screen-title">Aprender</h2>
-      <p class="screen-sub">Rascunhos para revisão. Textos, imagens e vídeos serão aprimorados com profissionais, mães e especialistas.</p>
+      <h2 class="screen-title">Dicas</h2>
+      <p class="screen-sub">Dicas para conhecer o canguru e cuidar juntos. Conteúdo em revisão com profissionais, mães e especialistas.</p>
       <div id="eduList"></div>
       <div class="tagline">Conteúdo preliminar · ainda não validado para uso assistencial</div>
     </section>
@@ -303,7 +305,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
       </div>
       <div class="form-section">
         <h3 class="form-section-title">Versão e instalação</h3>
-        <p class="demo-note">Versão <strong>0.2.0-demo.1</strong> · 21/10/2026<br>Base original: bd7363221a37</p>
+        <p class="demo-note">Versão <strong>0.2.0-demo.3</strong> · 22/10/2026<br>Base original: bd7363221a37</p>
         <p class="demo-note">Android: menu do Chrome → Adicionar à tela inicial / Instalar aplicativo.<br>iPhone: Compartilhar no Safari → Adicionar à Tela de Início.</p>
         <p class="demo-note">Abra uma vez com internet para preparar o uso offline.</p>
         <a href="CHANGELOG.md">Ver histórico desta versão</a>
@@ -318,7 +320,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
     <button class="active" data-s="s-timer"><span class="ic">⏱️</span><span class="lbl">Sessão</span></button>
     <button data-s="s-hist"><span class="ic">📊</span><span class="lbl">Histórico</span></button>
     <button data-s="s-cad"><span class="ic">👤</span><span class="lbl">Sobre</span></button>
-    <button data-s="s-edu"><span class="ic">📖</span><span class="lbl">Aprender</span></button>
+    <button data-s="s-edu"><span class="ic">📖</span><span class="lbl">Dicas</span></button>
   </nav>
 </div>
 

@@ -2,6 +2,25 @@
 
 Autor: Jefferson Guilherme.
 
+## 0.2.0-demo.3 — 22/10/2026
+
+- Seis gravuras r01 ilustram Dicas: GRV-001, GRV-019, GRV-022, GRV-024, GRV-025 e GRV-026, selecionadas conforme solicitação de uso do pesquisador.
+- Imagens locais, descrições alternativas, apresentação proporcional sem recorte e inclusão no cache offline.
+- Preservados textos educativos, funcionamento e dados da demonstração. A validação clínica e participativa permanece pendente.
+- Atualização demonstrativa preparada para distribuição; versão anterior preservada.
+
+## 0.2.0-demo.2 — 22/10/2026
+
+Revisão local preparada para avaliação do pesquisador; publicação ainda não executada.
+
+- Aba Aprender renomeada para Dicas no título e na navegação.
+- Acrescentados cartões sobre benefícios, posição, faixa, atividades tranquilas, alimentação materna e participação do pai e da família.
+- Mantidos os cartões anteriores sobre a proposta, cronômetro, acolhimento e seguimento.
+- Folder do pesquisador usado como fonte temática; números de risco e crescimento, a cena de cozinhar e medidas/amarração não foram transpostos. Referências oficiais e decisões no registro local desta revisão.
+- Gravuras não incluídas: aguardam aprovação individual.
+- Atualizados a identificação da versão e o cache offline. Armazenamento e funcionamento do cronômetro preservados.
+- Conteúdo preliminar; conferência documental não equivale à validação clínica e participativa prevista no estudo.
+
 ## 0.2.0-demo.1 — 21/10/2026
 
 Adaptação demonstrativa do primeiro aplicativo de Jefferson Guilherme, preservando sua identidade visual lilás, o cronômetro, o histórico e a navegação.

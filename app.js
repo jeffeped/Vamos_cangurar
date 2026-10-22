@@ -1,6 +1,6 @@
 'use strict';
-// Vamos Cangurar! 0.2.0-demo.1 — adaptação do protótipo original de Jefferson Guilherme.
-const APP_VERSION='0.2.0-demo.1';
+// Vamos Cangurar! 0.2.0-demo.3 — adaptação do protótipo original de Jefferson Guilherme.
+const APP_VERSION='0.2.0-demo.3';
 const DEMO_CODE='DEMO-001';
 const STORAGE_KEY='vamos-cangurar-demo-0.2';
 const RING_LEN=609;
@@ -113,19 +113,29 @@ function renderHist(){
 
 
 const edu=[
+ {ic:'💜',bg:'linear-gradient(150deg,#E7CFF2,#C99BDB)',tag:'Benefícios',t:'Por que fazer canguru?',image:{"src": "images/GRV-019_r01_contato_pele_a_pele.png", "alt": "Mãe sentada acolhe o bebê em contato pele a pele."},d:'Proximidade, calor e cuidado para o bebê.',
+ html:'O contato pele a pele ajuda a manter o bebê aquecido, fortalece o vínculo e favorece a amamentação. No cuidado ao prematuro ou bebê de baixo peso, o Método Canguru contribui para reduzir infecções e melhorar a sobrevivência. O crescimento deve ser acompanhado pela equipe, sem metas iguais para todos.'},
+ {ic:'🤱',bg:'linear-gradient(150deg,#EAD9F2,#CBA7E0)',tag:'Posição',t:'Perto do peito, rosto visível',image:{"src": "images/GRV-001_r01_contato_pele_a_pele.png", "alt": "Bebê na vertical junto ao peito da mãe, com o rosto visível e apoiado pelas mãos."},d:'Aprenda a posição com a equipe que cuida do bebê.',
+ html:'O bebê fica na vertical, em contato pele a pele junto ao peito, com a cabeça virada para um lado. Mantenha nariz e boca livres, sem o queixo encostado no peito. Peça à equipe que confira a posição e ensine como apoiar e movimentar seu bebê.'},
+ {ic:'🧣',bg:'linear-gradient(150deg,#F3D4E6,#DDA0C4)',tag:'Sustentação',t:'A faixa ajuda a apoiar',image:{"src": "images/GRV-022_r01_conhecer_a_faixa.png", "alt": "Profissional orienta a mãe sobre a faixa que sustenta o bebê, deixando o rosto descoberto."},d:'O ajuste precisa ser ensinado e conferido.',
+ html:'Use a faixa ou o suporte indicado pela equipe, ajustado ao seu corpo e ao bebê. O tecido deve sustentar sem cobrir o rosto. Aprenda o ajuste com um profissional; uma gravura não substitui essa demonstração.'},
+ {ic:'📖',bg:'linear-gradient(150deg,#D9C2EC,#B48BD6)',tag:'Dia a dia',t:'Uma pausa para você também',image:{"src": "images/GRV-026_r01_mae_comendo_fruta.png", "alt": "Mãe sentada come uma banana enquanto mantém o bebê em contato pele a pele."},d:'Leitura, conversa e alimentação com apoio.',
+ html:'Com o bebê bem posicionado e apoiado, e conforme a orientação da equipe, você pode aproveitar uma pausa acordada para ler, conversar ou se alimentar. Peça ajuda para deixar uma fruta ou um livro ao alcance. Combine também como descansar e quem pode ajudar quando você estiver cansada.'},
+ {ic:'👨‍🍼',bg:'linear-gradient(150deg,#E7CFF2,#C99BDB)',tag:'Cuidar juntos',t:'O pai e a família participam',image:{"src": "images/GRV-025_r01_pele_a_pele_com_pai.png", "alt": "Pai sentado sustenta o bebê em contato pele a pele junto ao peito."},d:'O cuidado pode ser compartilhado.',
+ html:'O pai também pode fazer contato pele a pele, com orientação da equipe. A família pode ajudar com a alimentação, a organização da casa e os momentos de descanso. Combine o apoio de que você precisa; fazer canguru não é uma competição.'},
  {ic:'💜',bg:'linear-gradient(150deg,#E7CFF2,#C99BDB)',tag:'A proposta',t:'Contato pele a pele',d:'Um espaço de educação e apoio ao registro.',
  html:'O projeto prevê conteúdos educativos sobre o contato pele a pele no Método Canguru. A linguagem e a apresentação serão aprimoradas com profissionais, mães e especialistas.'},
  {ic:'⏱️',bg:'linear-gradient(150deg,#F3D4E6,#DDA0C4)',tag:'Como usar',t:'Registrar uma sessão',d:'Experimente iniciar, acompanhar e encerrar o cronômetro.',
  html:'Nesta demonstração, toque em Iniciar simulação e depois em Encerrar simulação. Os horários e a duração aparecem no histórico fictício. O cronômetro não define quanto tempo o contato deve durar.'},
  {ic:'🤱',bg:'linear-gradient(150deg,#D9C2EC,#B48BD6)',tag:'Seu ritmo',t:'Acolhimento e motivação',d:'Indicadores para acompanhar, sem cobrança.',
  html:'O protocolo prevê mensagens e indicadores de caráter motivacional e educativo, sem culpa, competição ou pressão. Eles não são prescrição clínica, condição de participação ou avaliação do desempenho materno.'},
- {ic:'🏥',bg:'linear-gradient(150deg,#EAD9F2,#CBA7E0)',tag:'Continuidade',t:'Na maternidade e no seguimento',d:'Uma proposta que acompanha os contextos do estudo.',
+ {ic:'🏥',bg:'linear-gradient(150deg,#EAD9F2,#CBA7E0)',tag:'Continuidade',t:'Na maternidade e no seguimento',image:{"src": "images/GRV-024_r01_canguru_no_hospital.png", "alt": "Profissional acompanha a mãe e o bebê durante o canguru no hospital."},d:'Uma proposta que acompanha os contextos do estudo.',
  html:'O estudo contempla as unidades neonatais e, quando aplicável, o seguimento ambulatorial da terceira etapa do Método Canguru. O aplicativo será ajustado às necessidades identificadas nesses contextos.'},
- {ic:'📖',bg:'linear-gradient(150deg,#C99BDB,#7A4BA8)',tag:'Em desenvolvimento',t:'Orientações, imagens e vídeos',d:'Conteúdo a construir e avaliar com especialistas.',
- html:'As orientações assistenciais, imagens e vídeos ainda serão produzidos e avaliados. Esta tela demonstra a organização do conteúdo e não oferece instruções clínicas ou substitui as orientações da equipe assistencial.'}
+ {ic:'📖',bg:'linear-gradient(150deg,#C99BDB,#7A4BA8)',tag:'Em desenvolvimento',t:'Sobre estas dicas',d:'Fontes e revisão do conteúdo educativo.',
+ html:'Estas dicas foram preparadas a partir do folder fornecido ao projeto, com conferência em referências do Ministério da Saúde e da OMS. São conteúdo preliminar, sujeito à revisão do pesquisador e às avaliações do estudo; não substituem a orientação da equipe. As gravuras selecionadas foram incluídas com autorização do pesquisador e fazem parte desta demonstração em avaliação.<br><br>Referências: <a href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/cuidado-neonatal/metodo-canguru" target="_blank" rel="noopener noreferrer">Método Canguru — Ministério da Saúde</a>; <a href="https://www.who.int/publications/i/item/9789240115910" target="_blank" rel="noopener noreferrer">Guia de prática clínica — OMS, 2025</a>.'}
 ];
 function renderEdu(){
- $('#eduList').innerHTML=edu.map(e=>`<details class="edu-card"><summary><div class="edu-banner" style="background:${e.bg}"><span class="tag">${e.tag}</span><span aria-hidden="true" style="font-size:42px">${e.ic}</span></div><div class="edu-body"><h3>${e.t}</h3><p>${e.d}</p></div></summary><div class="edu-detail">${e.html}</div></details>`).join('');
+ $('#eduList').innerHTML=edu.map(e=>`<details class="edu-card"><summary><div class="edu-banner${e.image?' has-image':''}" style="background:${e.bg}"><span class="tag">${e.tag}</span>${e.image?`<img src="${e.image.src}" alt="${e.image.alt}" width="1536" height="1024" loading="lazy" decoding="async">`:`<span aria-hidden="true" style="font-size:42px">${e.ic}</span>`}</div><div class="edu-body"><h3>${e.t}</h3><p>${e.d}</p></div></summary><div class="edu-detail">${e.html}</div></details>`).join('');
 }
 function exportCSV(){
  const rows=[['modo','versao','codigo','inicio_iso','fim_iso','duracao_segundos','duracao_minutos']];
