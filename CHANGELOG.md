@@ -2,6 +2,15 @@
 
 Autor: Jefferson Guilherme.
 
+## 0.2.0-demo.4 — 22/10/2026
+
+- Nova aba Início com código fictício da dupla mãe–bebê, mantendo DEMO-001 e sem cadastro real.
+- AJ-003: onze motivos de dificuldade na aba Sessão, resposta opcional e seleção múltipla; inclui desconforto térmico e incômodo do bebê percebido pela mãe, conforme contribuição do pesquisador.
+- Histórico e CSV próprios para motivos, sem contar esses registros como sessões realizadas ou tempo de contato.
+- Persistência separada dos motivos com data/hora, código, identificador do registro, versão do app e lista r03. Erros de leitura preservam o conteúdo anterior; falha de gravação não anuncia sucesso.
+- Mantidos chave de sessões, cronômetro, registros existentes, Dicas e gravuras. Cache atualizado.
+- Sem nome, DNV, texto livre identificável ou transmissão para planilha. Backend e identificação real ainda dependem das definições do projeto.
+
 ## 0.2.0-demo.3 — 22/10/2026
 
 - Seis gravuras r01 ilustram Dicas: GRV-001, GRV-019, GRV-022, GRV-024, GRV-025 e GRV-026, selecionadas conforme solicitação de uso do pesquisador.

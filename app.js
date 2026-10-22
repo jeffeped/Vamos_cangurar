@@ -1,6 +1,6 @@
 'use strict';
-// Vamos Cangurar! 0.2.0-demo.3 — adaptação do protótipo original de Jefferson Guilherme.
-const APP_VERSION='0.2.0-demo.3';
+// Vamos Cangurar! 0.2.0-demo.4 — adaptação do protótipo original de Jefferson Guilherme.
+const APP_VERSION='0.2.0-demo.4';
 const DEMO_CODE='DEMO-001';
 const STORAGE_KEY='vamos-cangurar-demo-0.2';
 const RING_LEN=609;
@@ -47,6 +47,8 @@ function carregarDados(){
  }
 }
 function renderTimer(){
+ $('#barrierSaveBtn').disabled=running||!barrierStorageReadable;
+ $('#barrierRunningNote').textContent=running?'Há uma sessão em andamento. Encerre-a antes de registrar uma dificuldade para fazer agora.':'';
  $('#toggleBtn').textContent=running?'Encerrar simulação':'Iniciar simulação';
  $('#toggleBtn').classList.toggle('stop',running);
  $('#dial').classList.toggle('run',running);
@@ -112,6 +114,72 @@ function renderHist(){
 }
 
 
+const BARRIER_STORAGE_KEY='vamos-cangurar-demo-barreiras-v1';
+const BARRIER_LIST_VERSION='r03';
+const BARRIER_OPTIONS=[{"id": "BAR-01", "label": "Ainda não sei bem como posicionar meu bebê."}, {"id": "BAR-02", "label": "Preciso de orientação ou ajuda da equipe e ainda não consegui."}, {"id": "BAR-03", "label": "Não tenho um lugar confortável ou com privacidade, ou não me sinto à vontade em expor meu corpo."}, {"id": "BAR-05", "label": "Tenho medo de machucar meu bebê ou mexer nos aparelhos e sondas."}, {"id": "BAR-06", "label": "Estou com dor, muito cansada ou não me sinto bem."}, {"id": "BAR-07", "label": "Preciso cuidar de outras tarefas ou dos meus filhos e não tenho ajuda agora."}, {"id": "BAR-08", "label": "Não consigo estar junto do meu bebê agora."}, {"id": "BAR-09", "label": "A equipe orientou aguardar ou meu bebê está recebendo outros cuidados."}, {"id": "BAR-10", "label": "Falta a faixa ou outro material indicado pela equipe."}, {"id": "BAR-11", "label": "Está muito quente e fico desconfortável para fazer o pele a pele."}, {"id": "BAR-12", "label": "Meu bebê parece incomodado ou não aceita ficar na posição agora."}];
+let barrierRecords=[], barrierStorageReadable=true;
+const escapeHTML=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function loadBarrierRecords(){
+ try{
+  const raw=localStorage.getItem(BARRIER_STORAGE_KEY);
+  if(!raw)return;
+  const data=JSON.parse(raw);
+  if(data.mode!=='demo'||data.codigo!==DEMO_CODE||!Array.isArray(data.records))throw Error('Formato inválido');
+  const loaded=data.records.map(record=>{
+   if(typeof record.id!=='string'||!/^[a-zA-Z0-9-]+$/.test(record.id)||record.codigo!==DEMO_CODE||record.listVersion!==BARRIER_LIST_VERSION||typeof record.appVersion!=='string'||!/^0\.2\.0-demo\.\d+$/.test(record.appVersion)||!Number.isFinite(new Date(record.at).getTime())||!Array.isArray(record.reasons)||!record.reasons.length)throw Error('Registro inválido');
+   const ids=record.reasons.map(reason=>reason.id);
+   if(new Set(ids).size!==ids.length||ids.some(id=>!BARRIER_OPTIONS.some(o=>o.id===id)))throw Error('Motivo inválido');
+   return {id:record.id,codigo:DEMO_CODE,at:new Date(record.at).toISOString(),appVersion:record.appVersion,listVersion:record.listVersion,reasons:BARRIER_OPTIONS.filter(o=>ids.includes(o.id)).map(o=>({...o}))};
+  });
+  if(new Set(loaded.map(r=>r.id)).size!==loaded.length)throw Error('Registro repetido');
+  barrierRecords=loaded;
+ }catch{
+  barrierStorageReadable=false;
+  $('#barrierStatus').textContent='Não foi possível ler os motivos locais. Os dados anteriores foram preservados; novos registros estão indisponíveis neste navegador.';
+ }
+}
+function renderBarrierChoices(){
+ $('#barrierChoices').innerHTML=BARRIER_OPTIONS.map(o=>`<label class="barrier-choice"><input type="checkbox" name="barrier" value="${o.id}"><span>${escapeHTML(o.label)}</span></label>`).join('');
+}
+function saveBarrierRecord(selected){
+ if(running){$('#barrierStatus').textContent='Há uma sessão em andamento. Encerre-a antes de registrar uma dificuldade para fazer agora.';return false;}
+ if(!barrierStorageReadable){$('#barrierStatus').textContent='Os motivos anteriores não puderam ser lidos. Eles foram preservados; não é possível registrar novos motivos agora.';return false;}
+ if(!Array.isArray(selected)||!selected.length||selected.some(id=>!BARRIER_OPTIONS.some(o=>o.id===id))){$('#barrierStatus').textContent='Marque pelo menos um motivo para registrar, ou feche esta seção para responder depois.';return false;}
+ const reasons=BARRIER_OPTIONS.filter(o=>selected.includes(o.id)).map(o=>({...o}));
+ const record={id:crypto.randomUUID(),at:new Date().toISOString(),codigo:DEMO_CODE,appVersion:APP_VERSION,listVersion:BARRIER_LIST_VERSION,reasons};
+ const next=[...barrierRecords,record];
+ try{localStorage.setItem(BARRIER_STORAGE_KEY,JSON.stringify({mode:'demo',codigo:DEMO_CODE,records:next}));}
+ catch{$('#barrierStatus').textContent='Não foi possível salvar os motivos neste navegador. Suas escolhas continuam nesta tela para tentar novamente.';return false;}
+ barrierRecords=next;renderBarrierHistory();
+ document.querySelectorAll('#barrierChoices input').forEach(input=>input.checked=false);
+ $('#barrierStatus').textContent='Motivos registrados nesta demonstração. Eles não contam como uma sessão de pele a pele.';
+ toast('Motivos registrados na demonstração.');return true;
+}
+function renderBarrierHistory(){
+ $('#barrierExportBtn').disabled=!barrierRecords.length;
+ $('#barrierHistory').innerHTML=barrierRecords.length?[...barrierRecords].sort((a,b)=>new Date(b.at)-new Date(a.at)).map(r=>`<article class="barrier-record"><h4>${escapeHTML(dayLabel(new Date(r.at)))} · ${fmtTime(new Date(r.at))}</h4><ul>${r.reasons.map(o=>`<li>${escapeHTML(o.label)}</li>`).join('')}</ul></article>`).join(''):'<p class="demo-note">Nenhum motivo registrado nesta demonstração.</p>';
+}
+function exportBarrierCSV(){
+ if(!barrierRecords.length)return;
+ const rows=[['modo','versao_app_registro','codigo','registro_id','data_hora_iso','versao_lista','motivo_codigo','motivo']];
+ barrierRecords.forEach(r=>r.reasons.forEach(o=>rows.push(['DEMONSTRACAO',r.appVersion,r.codigo,r.id,r.at,r.listVersion,o.id,o.label])));
+ const csv=rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+ const a=document.createElement('a');a.href=url;a.download='vamos-cangurar-motivos-demo-'+APP_VERSION+'.csv';a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);toast('CSV de motivos da demonstração exportado.');
+}
+function resetBarrierRecords(){
+ try{localStorage.setItem(BARRIER_STORAGE_KEY,JSON.stringify({mode:'demo',codigo:DEMO_CODE,records:[]}));}
+ catch{$('#barrierStatus').textContent='Não foi possível reiniciar os motivos locais. Os registros anteriores foram preservados.';return false;}
+ barrierRecords=[];barrierStorageReadable=true;$('#barrierStatus').textContent='';
+ document.querySelectorAll('#barrierChoices input').forEach(input=>input.checked=false);
+ renderBarrierHistory();return true;
+}
+$('#barrierForm').addEventListener('submit',event=>{event.preventDefault();saveBarrierRecord(Array.from(document.querySelectorAll('#barrierChoices input:checked'),input=>input.value));});
+$('#barrierExportBtn').addEventListener('click',exportBarrierCSV);
+$('#goSession').addEventListener('click',()=>document.querySelector('.nav button[data-s="s-timer"]').click());
+
+
 const edu=[
  {ic:'💜',bg:'linear-gradient(150deg,#E7CFF2,#C99BDB)',tag:'Benefícios',t:'Por que fazer canguru?',image:{"src": "images/GRV-019_r01_contato_pele_a_pele.png", "alt": "Mãe sentada acolhe o bebê em contato pele a pele."},d:'Proximidade, calor e cuidado para o bebê.',
  html:'O contato pele a pele ajuda a manter o bebê aquecido, fortalece o vínculo e favorece a amamentação. No cuidado ao prematuro ou bebê de baixo peso, o Método Canguru contribui para reduzir infecções e melhorar a sobrevivência. O crescimento deve ser acompanhado pela equipe, sem metas iguais para todos.'},
@@ -149,15 +217,16 @@ $('#toggleBtn').addEventListener('click',()=>running?stopSession():startSession(
 $('#exportBtn').addEventListener('click',exportCSV);
 $('#resetDemo').addEventListener('click',()=>{
  clearInterval(tick);tick=null;running=false;startTime=null;seedDemo();
+ const barriersReset=resetBarrierRecords();
  const saved=salvarDados();renderTimer();renderToday();renderHist();
- toast(saved?'Demonstração reiniciada com exemplos fictícios.':'Exemplos reiniciados somente nesta tela.');
+ toast(saved&&barriersReset?'Demonstração reiniciada com exemplos fictícios.':'Não foi possível reiniciar todos os registros locais. Confira os avisos.');
 });
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
  document.querySelectorAll('.nav button').forEach(x=>{x.classList.remove('active');x.removeAttribute('aria-current');});
  document.querySelectorAll('.screen').forEach(x=>x.style.display='none');
  b.classList.add('active');b.setAttribute('aria-current','page');$('#'+b.dataset.s).style.display='block';$('#wrap').scrollTop=0;
 }));
-carregarDados();renderToday();renderHist();renderEdu();renderTimer();
+carregarDados();loadBarrierRecords();renderBarrierChoices();renderBarrierHistory();renderToday();renderHist();renderEdu();renderTimer();
 if(running)tick=setInterval(update,1000);
 if('serviceWorker' in navigator){
  window.addEventListener('load',()=>{

@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0-demo.3",
+  "version": "0.2.0-demo.4",
   "mode": "demonstration",
   "date": "2026-10-22",
   "author": "Jefferson Guilherme",
@@ -12,6 +12,8 @@
   },
   "data": "fictional-only",
   "research_ready": false,
-  "previous_version": "0.2.0-demo.2",
-  "content_status": "draft_pending_researcher_and_study_validation"
+  "previous_version": "0.2.0-demo.3",
+  "content_status": "draft_pending_researcher_and_study_validation",
+  "barrier_list_version": "r03",
+  "participant_unit": "mother-infant-dyad; demonstration only"
 }

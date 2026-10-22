@@ -14,7 +14,7 @@ function boot(storage=new Map(),time=Date.now()){
  return {run:s=>vm.runInContext(s,context),advance:ms=>now+=ms,storage,requests,blobs,node};
 }
 test('Demonstração identificada na interface e sem identificadores diretos',()=>{
- assert.match(html,/0\.2\.0-demo\.3/);assert.match(html,/dados fictícios/i);
+ assert.match(html,/0\.2\.0-demo\.4/);assert.match(html,/dados fictícios/i);
  assert.doesNotMatch(html,/<input[^>]+id="(?:bebeDNV|bebeNasc|maeIdade|reasonOther)"/);
  assert.doesNotMatch(html,/Concordo voluntariamente em participar desta pesquisa/);
 });
@@ -34,7 +34,7 @@ test('Cronômetro preserva uma sessão em andamento após recarregar',()=>{
 test('CSV identifica explicitamente versão, demonstração e horários completos',async()=>{
  const a=boot();a.run('startSession()');a.advance(125000);a.run('stopSession()');a.run('exportCSV()');
  const csv=await a.blobs.at(-1).text();
- assert.match(csv,/0\.2\.0-demo\.3/);assert.match(csv,/DEMONSTRACAO/);assert.match(csv,/DEMO-001/);
+ assert.match(csv,/0\.2\.0-demo\.4/);assert.match(csv,/DEMONSTRACAO/);assert.match(csv,/DEMO-001/);
  assert.match(csv,/inicio_iso/);assert.match(csv,/fim_iso/);assert.doesNotMatch(csv,/DNV|renda|trabalho|TCLE aceito/);
 });
 test('Armazenamento indisponível é comunicado sem bloquear o cronômetro',()=>{
@@ -42,3 +42,50 @@ test('Armazenamento indisponível é comunicado sem bloquear o cronômetro',()=>
  assert.equal(a.run('running'),true);assert.match(a.node('#storageStatus').textContent,/não foi possível salvar/i);
 });
 
+
+test('Motivos aceitam seleção múltipla sem alterar sessões ou duração',()=>{
+ const a=boot();const before=a.run('JSON.stringify(sessions)');const stored=a.storage.get(a.run('STORAGE_KEY'));
+ assert.equal(a.run("saveBarrierRecord(['BAR-11','BAR-12','BAR-11'])"),true);
+ assert.equal(a.run('barrierRecords.length'),1);assert.equal(a.run('barrierRecords[0].reasons.length'),2);
+ assert.equal(a.run('JSON.stringify(sessions)'),before);assert.equal(a.storage.get(a.run('STORAGE_KEY')),stored);
+ assert.equal(a.requests.length,0);
+});
+test('Motivos reaparecem após recarregar com código e versões do registro',()=>{
+ const a=boot();a.run("saveBarrierRecord(['BAR-11','BAR-12'])");
+ const b=boot(a.storage);assert.equal(b.run('barrierRecords.length'),1);
+ assert.equal(b.run('barrierRecords[0].codigo'),'DEMO-001');assert.equal(b.run('barrierRecords[0].listVersion'),'r03');
+ assert.equal(b.run('barrierRecords[0].appVersion'),b.run('APP_VERSION'));
+ assert.match(b.run('barrierRecords[0].at'),/^\d{4}-\d{2}-\d{2}T/);
+ assert.match(b.node('#barrierHistory').innerHTML,/muito quente/);
+});
+test('Resposta vazia ou motivo desconhecido não cria registro',()=>{
+ const a=boot();assert.equal(a.run('saveBarrierRecord([])'),false);
+ assert.equal(a.run("saveBarrierRecord(['DESCONHECIDO'])"),false);
+ assert.equal(a.run('barrierRecords.length'),0);
+});
+test('Motivo não pode ser registrado com sessão em andamento',()=>{
+ const a=boot();a.run('startSession()');assert.equal(a.run("saveBarrierRecord(['BAR-11'])"),false);
+ assert.equal(a.run('barrierRecords.length'),0);assert.equal(a.run('running'),true);
+});
+test('Falha de armazenamento não anuncia nem mantém motivo como salvo',()=>{
+ const a=boot();a.run("localStorage.setItem=()=>{throw Error('quota')}");
+ assert.equal(a.run("saveBarrierRecord(['BAR-11'])"),false);assert.equal(a.run('barrierRecords.length'),0);
+ assert.match(a.node('#barrierStatus').textContent,/não foi possível salvar/i);
+});
+test('CSV de motivos tem uma linha por seleção e é separado do CSV de sessões',async()=>{
+ const a=boot();a.run("saveBarrierRecord(['BAR-11','BAR-12'])");a.run('exportBarrierCSV()');
+ const csv=await a.blobs.at(-1).text();assert.equal(csv.split('\r\n').length,3);
+ assert.match(csv,/motivo_codigo/);assert.match(csv,/BAR-11/);assert.match(csv,/BAR-12/);assert.match(csv,/DEMONSTRACAO/);assert.match(csv,/r03/);
+ assert.doesNotMatch(csv,/duracao_segundos|nome_mae|DNV/);
+ a.run('exportCSV()');const sessions=await a.blobs.at(-1).text();assert.match(sessions,/duracao_segundos/);assert.doesNotMatch(sessions,/BAR-11/);
+});
+test('Arquivo de motivos ilegível é preservado e não bloqueia sessões',()=>{
+ const a=boot();const key=a.run('BARRIER_STORAGE_KEY');a.storage.set(key,'ARQUIVO-ILEGIVEL');
+ const b=boot(a.storage);assert.equal(b.run("saveBarrierRecord(['BAR-11'])"),false);assert.equal(b.storage.get(key),'ARQUIVO-ILEGIVEL');
+ b.run('startSession()');assert.equal(b.run('running'),true);
+});
+test('Reiniciar demonstração limpa motivos e preserva a separação do cadastro antigo',()=>{
+ const a=boot();a.run("saveBarrierRecord(['BAR-11'])");a.storage.set('vc_cadastro','CADASTRO-ANTIGO');a.node('#resetDemo').click();
+ assert.equal(a.run('barrierRecords.length'),0);assert.equal(a.storage.get('vc_cadastro'),'CADASTRO-ANTIGO');
+ const b=boot(a.storage);assert.equal(b.run('barrierRecords.length'),0);
+});

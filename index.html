@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vamos Cangurar! · Demonstração</title>
 <meta name="author" content="Jefferson Guilherme">
-<meta name="app-version" content="0.2.0-demo.3">
+<meta name="app-version" content="0.2.0-demo.4">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <link rel="apple-touch-icon" href="icon-192.png">
 
@@ -215,6 +215,13 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
 .nav{min-height:84px;height:auto;}
 @media(max-width:360px){.screen-wrap{padding-left:12px;padding-right:12px}.topbar{padding-left:16px;padding-right:16px}.dial{transform:scale(.9);margin-top:-8px;margin-bottom:0}.brand h1{font-size:19px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.dyad-card,.barrier-panel,.barrier-record{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:18px;margin:16px 0;box-shadow:var(--shadow-soft);}
+.dyad-card{text-align:center;}.dyad-card p{font-size:14px;line-height:1.6;color:var(--ink-soft);}.dyad-card strong{display:block;color:var(--purple-dark);font-size:28px;letter-spacing:2px;margin:14px 0;}
+.barrier-panel summary{font-weight:800;font-size:15px;cursor:pointer;line-height:1.5;}.barrier-panel form{margin-top:16px;}.barrier-panel fieldset{border:0;padding:0;margin:0;min-width:0;}.barrier-panel legend{font-weight:700;font-size:15px;line-height:1.5;}
+.barrier-choice{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.5;cursor:pointer;}.barrier-choice input{flex:0 0 20px;width:20px;height:20px;margin-top:2px;accent-color:var(--purple-dark);}.barrier-panel .btn-main{font-size:14px;margin-top:16px;}.btn-main:disabled,.btn-export:disabled{opacity:.55;cursor:default;}
+.barrier-history{margin-top:26px;}.barrier-history h3{font-size:19px;color:var(--purple-dark);}.barrier-record h4{font-size:14px;line-height:1.5;}.barrier-record ul{padding-left:20px;margin-top:10px;}.barrier-record li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+
 </style>
 </head>
 <body>
@@ -232,10 +239,22 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
   </div>
 
   <div class="screen-wrap" id="wrap">
-<div class="demo-banner" role="note"><strong>Protótipo 0.2.0-demo.3</strong><br>Demonstração com dados fictícios · DEMO-001<br>Não use dados de participantes.</div><p class="demo-note" id="storageStatus" role="status" aria-live="polite"></p>
+<div class="demo-banner" role="note"><strong>Protótipo 0.2.0-demo.4</strong><br>Demonstração com dados fictícios · DEMO-001<br>Não use dados de participantes.</div><p class="demo-note" id="storageStatus" role="status" aria-live="polite"></p>
+
+    <section class="screen" id="s-home">
+      <h2 class="screen-title">Sua dupla</h2>
+      <p class="screen-sub">Mãe e bebê, juntos no cuidado.</p>
+      <div class="dyad-card">
+        <p>Código da dupla nesta demonstração</p>
+        <strong id="dyadCode">DEMO-001</strong>
+        <p>Este código é fictício e igual para todos que experimentam o protótipo.</p>
+      </div>
+      <p class="demo-note">Você pode simular sessões e registrar dificuldades. Tudo fica somente neste navegador. Não há cadastro de participantes nem envio para uma planilha de pesquisa nesta versão.</p>
+      <button type="button" class="btn-main" id="goSession">Ir para Sessão</button>
+    </section>
 
     <!-- TIMER -->
-    <section class="screen" id="s-timer">
+    <section class="screen" id="s-timer" style="display:none;">
       <h2 class="screen-title">Iniciar sessão</h2>
       <p class="screen-sub">Experimente o cronômetro com uma sessão fictícia.</p>
       <div class="timer-card">
@@ -258,6 +277,19 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
         <button class="btn-main" id="toggleBtn">Iniciar contato</button>
         <p class="demo-note">Você pode encerrar quando quiser. O aplicativo não determina a duração do contato.</p>
       </div>
+      <details class="barrier-panel" id="barrierPanel">
+        <summary>Não conseguiu fazer pele a pele agora?</summary>
+        <form id="barrierForm">
+          <fieldset>
+            <legend>O que está dificultando fazer o pele a pele agora?</legend>
+            <p class="demo-note" id="barrierHelp">Se quiser, marque um ou mais motivos. Você também pode deixar para responder depois. Nesta demonstração, use somente situações fictícias.</p>
+            <div id="barrierChoices" aria-describedby="barrierHelp"></div>
+          </fieldset>
+          <p class="demo-note" id="barrierRunningNote" role="status"></p>
+          <button class="btn-main" id="barrierSaveBtn" type="submit">Registrar motivos (simulação)</button>
+          <p class="demo-note" id="barrierStatus" role="status" aria-live="polite"></p>
+        </form>
+      </details>
       <div class="today-strip">
         <div class="stat"><div class="v" id="todayCount">0</div><div class="l">sessões hoje</div></div>
         <div class="stat"><div class="v" id="todayTotal">0min</div><div class="l">total hoje</div></div>
@@ -276,6 +308,12 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
       </div>
       <div id="histList"></div>
       <button class="btn-export" id="exportBtn">⬇️ Exportar demonstração (CSV)</button>
+      <section class="barrier-history" aria-labelledby="barrierHistoryTitle">
+        <h3 id="barrierHistoryTitle">Motivos registrados</h3>
+        <p class="demo-note">Registros opcionais de dificuldades. Não são sessões realizadas e não somam tempo de pele a pele.</p>
+        <div id="barrierHistory"></div>
+        <button class="btn-export" id="barrierExportBtn" type="button" disabled>Exportar motivos (CSV separado)</button>
+      </section>
     </section>
 
     <!-- DICAS -->
@@ -305,7 +343,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
       </div>
       <div class="form-section">
         <h3 class="form-section-title">Versão e instalação</h3>
-        <p class="demo-note">Versão <strong>0.2.0-demo.3</strong> · 22/10/2026<br>Base original: bd7363221a37</p>
+        <p class="demo-note">Versão <strong>0.2.0-demo.4</strong> · 22/10/2026<br>Base original: bd7363221a37</p>
         <p class="demo-note">Android: menu do Chrome → Adicionar à tela inicial / Instalar aplicativo.<br>iPhone: Compartilhar no Safari → Adicionar à Tela de Início.</p>
         <p class="demo-note">Abra uma vez com internet para preparar o uso offline.</p>
         <a href="CHANGELOG.md">Ver histórico desta versão</a>
@@ -317,7 +355,8 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var
   <div class="toast" id="toast"></div>
 
   <nav class="nav">
-    <button class="active" data-s="s-timer"><span class="ic">⏱️</span><span class="lbl">Sessão</span></button>
+    <button class="active" data-s="s-home" aria-current="page"><span class="ic">🏠</span><span class="lbl">Início</span></button>
+    <button data-s="s-timer"><span class="ic">⏱️</span><span class="lbl">Sessão</span></button>
     <button data-s="s-hist"><span class="ic">📊</span><span class="lbl">Histórico</span></button>
     <button data-s="s-cad"><span class="ic">👤</span><span class="lbl">Sobre</span></button>
     <button data-s="s-edu"><span class="ic">📖</span><span class="lbl">Dicas</span></button>
