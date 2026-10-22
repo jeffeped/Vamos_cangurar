@@ -2,6 +2,12 @@
 
 Autor: Jefferson Guilherme.
 
+## 0.2.0-demo.5 — 22/10/2026
+
+- AJ-005: corrigida atualização que misturava HTML novo e JavaScript antigo do cache, deixando Ir para Sessão sem ação e os motivos vazios.
+- JavaScript identificado pela versão na URL e incluído com a mesma URL no cache offline. Mantidos dados locais, conteúdo e funcionalidades.
+- Acrescentada regressão de atualização com cache da demo.3, navegação pelo endereço antigo, abertura de Sessão, onze motivos, salvamento múltiplo e uso offline.
+
 ## 0.2.0-demo.4 — 22/10/2026
 
 - Nova aba Início com código fictício da dupla mãe–bebê, mantendo DEMO-001 e sem cadastro real.

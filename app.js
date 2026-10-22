@@ -1,6 +1,6 @@
 'use strict';
-// Vamos Cangurar! 0.2.0-demo.4 — adaptação do protótipo original de Jefferson Guilherme.
-const APP_VERSION='0.2.0-demo.4';
+// Vamos Cangurar! 0.2.0-demo.5 — adaptação do protótipo original de Jefferson Guilherme.
+const APP_VERSION='0.2.0-demo.5';
 const DEMO_CODE='DEMO-001';
 const STORAGE_KEY='vamos-cangurar-demo-0.2';
 const RING_LEN=609;
@@ -230,7 +230,7 @@ carregarDados();loadBarrierRecords();renderBarrierChoices();renderBarrierHistory
 if(running)tick=setInterval(update,1000);
 if('serviceWorker' in navigator){
  window.addEventListener('load',()=>{
-  navigator.serviceWorker.register('./sw.js').catch(()=>{$('#storageStatus').textContent='O uso offline não foi preparado. Abra esta demonstração com internet.';});
+  navigator.serviceWorker.register('./sw.js?v='+APP_VERSION).catch(()=>{$('#storageStatus').textContent='O uso offline não foi preparado. Abra esta demonstração com internet.';});
  });
 }
 

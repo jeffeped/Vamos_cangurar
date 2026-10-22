@@ -2,7 +2,7 @@
 
 Autor: Jefferson Guilherme.
 
-Versão: **0.2.0-demo.4**, de 22/10/2026. Exploração com dados fictícios; não usar com participantes.
+Versão: **0.2.0-demo.5**, de 22/10/2026. Exploração com dados fictícios; não usar com participantes.
 
 Esta adaptação mantém o visual e a navegação do primeiro aplicativo. Base original: [commit bd7363221a375c89e8f5fe91673379076713d6a8](https://github.com/jeffeped/Vamos_cangurar/tree/bd7363221a375c89e8f5fe91673379076713d6a8). A referência `arquivo/primeiro-app-2026-06-06` preserva a versão anterior. Há também cópia local de seus cinco arquivos, conferida pelos identificadores Git dos arquivos, em `99_ARQUIVO/APP_ORIGINAL_2026-06-06_bd7363221a37` na pasta do projeto de pesquisa.
 
@@ -17,7 +17,7 @@ O cronômetro, o histórico e o CSV usam somente DEMO-001. O conteúdo de Dicas 
 - `version.json`: identificação da versão, base original e referência ao parecer.
 - `CHANGELOG.md`: mudanças, requisitos do protocolo e limites da demonstração.
 - `tests/prototipo.test.mjs`: verificações do cronômetro, exportação, isolamento e ausência de envio.
-- Registro local do projeto: `00_GESTAO/REGISTRO_APP_0.2.0-demo.4_2026-10-22.json`, com hashes, fontes e resultado efetivo da publicação.
+- Registro local do projeto: `00_GESTAO/REGISTRO_APP_0.2.0-demo.5_2026-10-22.json`, com hashes, fontes e resultado efetivo da publicação.
 
 Os PDFs e os documentos da pesquisa permanecem na pasta regulatória local; não fazem parte desta publicação. A aprovação do protocolo não representa validação concluída do aplicativo.
 
@@ -38,3 +38,5 @@ A versão 0.2.0-demo.1 permanece preservada no histórico como referência anter
 ## Início e motivos
 
 A aba Início mostra o código fictício da dupla mãe–bebê DEMO-001. Não cria participantes. A aba Sessão permite registrar opcionalmente um ou mais dos onze motivos acordados, lista r03. Os motivos ficam em chave local separada das sessões, sem somar sessões ou duração. O Histórico e a exportação CSV de motivos são separados; há uma linha por motivo selecionado, agrupável pelo registro_id. O CSV de sessões mantém uma linha por sessão concluída, vinculada ao código. Não há integração com planilha ou serviço de pesquisa. A versão utilizada no momento de cada registro e a revisão da lista acompanham os motivos exportados.
+
+O arquivo JavaScript usa URL vinculada à versão, também incluída no cache offline. Isso evita tela nova com código da versão antiga durante a atualização do aplicativo. O teste de atualização deve começar com a versão anterior já armazenada, além do teste em navegador limpo.

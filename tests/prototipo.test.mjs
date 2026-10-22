@@ -3,6 +3,14 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+test('HTML solicita o código da mesma versão e essa URL está no cache offline',()=>{
+ const version=JSON.parse(readFileSync(new URL('../version.json',import.meta.url),'utf8')).version;
+ const script=html.match(/<script src="([^"]+)"/)[1];
+ assert.equal(new URL(script,'https://example.test/').searchParams.get('v'),version);
+ const worker=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
+ assert.ok(worker.includes("'./"+script+"'"),'O cache precisa conter a URL exata solicitada pelo HTML');
+ assert.equal(html.match(/name="app-version" content="([^"]+)"/)[1],version);
+});
 let code; try {code=readFileSync(new URL('../app.js',import.meta.url),'utf8');} catch {code=html.match(/<script>([\s\S]*?)<\/script>/)[1];}
 function boot(storage=new Map(),time=Date.now()){
  const nodes=new Map(), requests=[], blobs=[];
@@ -14,7 +22,7 @@ function boot(storage=new Map(),time=Date.now()){
  return {run:s=>vm.runInContext(s,context),advance:ms=>now+=ms,storage,requests,blobs,node};
 }
 test('Demonstração identificada na interface e sem identificadores diretos',()=>{
- assert.match(html,/0\.2\.0-demo\.4/);assert.match(html,/dados fictícios/i);
+ assert.match(html,/0\.2\.0-demo\.5/);assert.match(html,/dados fictícios/i);
  assert.doesNotMatch(html,/<input[^>]+id="(?:bebeDNV|bebeNasc|maeIdade|reasonOther)"/);
  assert.doesNotMatch(html,/Concordo voluntariamente em participar desta pesquisa/);
 });
@@ -34,7 +42,7 @@ test('Cronômetro preserva uma sessão em andamento após recarregar',()=>{
 test('CSV identifica explicitamente versão, demonstração e horários completos',async()=>{
  const a=boot();a.run('startSession()');a.advance(125000);a.run('stopSession()');a.run('exportCSV()');
  const csv=await a.blobs.at(-1).text();
- assert.match(csv,/0\.2\.0-demo\.4/);assert.match(csv,/DEMONSTRACAO/);assert.match(csv,/DEMO-001/);
+ assert.match(csv,/0\.2\.0-demo\.5/);assert.match(csv,/DEMONSTRACAO/);assert.match(csv,/DEMO-001/);
  assert.match(csv,/inicio_iso/);assert.match(csv,/fim_iso/);assert.doesNotMatch(csv,/DNV|renda|trabalho|TCLE aceito/);
 });
 test('Armazenamento indisponível é comunicado sem bloquear o cronômetro',()=>{
